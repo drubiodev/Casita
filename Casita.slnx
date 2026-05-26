@@ -1,2 +1,5 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Casita.Api/Casita.Api.csproj" />
+  </Folder>
 </Solution>
