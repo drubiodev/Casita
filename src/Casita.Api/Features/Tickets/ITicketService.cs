@@ -4,5 +4,5 @@ namespace Casita.Api.Features.Tickets;
 
 public interface ITicketService
 {
-    Task<Ticket> CreateTicketAsync(CreateTicketRequest ticket);
+    Task<Ticket> CreateTicketAsync(CreateTicketRequest ticket, string createdBy);
 }

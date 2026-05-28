@@ -18,11 +18,11 @@ public class TicketRepository : ITicketRepository
         const string sql = """
             INSERT INTO tickets (
                 id, home_id, assigned_to, title, description,
-                severity, due_date, created_at, updated_at
+                severity, due_date, created_at, updated_at, created_by
             )
             VALUES (
                 @Id, @HomeId, @AssignedTo, @Title, @Description,
-                @Severity, @DueDate, @CreatedAt, @UpdatedAt
+                @Severity, @DueDate, @CreatedAt, @UpdatedAt, @CreatedBy
             );
             """;
 
@@ -43,7 +43,8 @@ public class TicketRepository : ITicketRepository
                 severity    AS Severity,
                 due_date    AS DueDate,
                 created_at  AS CreatedAt,
-                updated_at  AS UpdatedAt
+                updated_at  AS UpdatedAt,
+                created_by  AS CreatedBy
             FROM tickets
             WHERE id = @Id;
             """;

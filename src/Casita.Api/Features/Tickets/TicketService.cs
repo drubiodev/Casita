@@ -12,7 +12,7 @@ public class TicketService : ITicketService
         _ticketRepository = ticketRepository;
     }
 
-    public async Task<Ticket> CreateTicketAsync(CreateTicketRequest request)
+    public async Task<Ticket> CreateTicketAsync(CreateTicketRequest request, string createdBy)
     {
         // TODO: Add validation logic
         var now = DateTime.UtcNow;
@@ -25,7 +25,8 @@ public class TicketService : ITicketService
             request.Severity,
             request.DueDate,
             now,
-            now
+            now,
+            createdBy
         );
 
         await _ticketRepository.InsertAsync(ticket);

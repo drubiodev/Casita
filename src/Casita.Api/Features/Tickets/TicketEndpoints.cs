@@ -1,3 +1,4 @@
+using Casita.Api.Features.Auth;
 using Casita.Infrastructure.Models;
 
 namespace Casita.Api.Features.Tickets;
@@ -8,6 +9,7 @@ public static class TicketEndpoints
     {
         var group = routes.MapGroup("/tickets").RequireAuthorization();
 
-        group.MapPost("", (CreateTicketRequest ticket, ITicketService ticketService) => ticketService.CreateTicketAsync(ticket));
+        group.MapPost("", (CreateTicketRequest ticket, ITicketService ticketService, ICurrentUser currentUser) =>
+            ticketService.CreateTicketAsync(ticket, currentUser.UserId));
     }
 }

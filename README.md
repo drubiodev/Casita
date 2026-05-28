@@ -67,12 +67,20 @@ docker compose down -v              # remove containers AND wipe data
 
 ### Re-seeding the database
 
-The init scripts in `SqlScripts/` only run when the Postgres data volume is **empty**. To reapply them after changes:
+The init scripts in `SqlScripts/` only run when the Postgres data volume is **empty**. If you edit a schema file (add a column, new table, new index, etc.) after the DB has already been initialized, the changes will **not** apply on a normal `docker compose up` — `CREATE TABLE IF NOT EXISTS` becomes a no-op, and follow-up statements that depend on new columns will fail with errors like:
+
+```
+ERROR: column "created_by" does not exist
+```
+
+To reapply after schema changes, wipe the volume and bring it back up:
 
 ```bash
 docker compose down -v
 docker compose up -d
 ```
+
+> Once the schema stabilizes and we have data worth keeping, we'll switch to a real migration tool (DbUp / FluentMigrator / EF migrations). For now, `down -v` is the workflow.
 
 ### Connecting from pgAdmin
 
@@ -97,11 +105,10 @@ From the repo root:
 dotnet user-jwts create --project src/Casita.Api \
   --name "00000000-0000-0000-0000-000000000abc" \
   --role admin \
-  --scope "tickets:read" --scope "tickets:write" \
-  --claim "home_id=11111111-1111-1111-1111-111111111111"
+  --scope "tickets:read" --scope "tickets:write"
 ```
 
-`--name` sets the `sub` (subject) claim — the user id the token represents. ASP.NET maps it to `ClaimTypes.NameIdentifier`, readable via `User.FindFirstValue(ClaimTypes.NameIdentifier)`. Use any GUID/string that identifies a test user.
+`--name` sets the `sub` (subject) claim — the user id the token represents. ASP.NET maps it to `ClaimTypes.NameIdentifier`, and the app reads it via `ICurrentUser.UserId`. Use any GUID/string that identifies a test user.
 
 The command prints a JWT — copy it.
 

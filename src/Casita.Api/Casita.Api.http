@@ -7,11 +7,11 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "homeId": "11111111-1111-1111-1111-111111111111",
-  "assignedTo": "22222222-2222-2222-2222-222222222222",
-  "title": "Leaky faucet in kitchen",
-  "description": "Water dripping from the kitchen sink faucet.",
-  "severity": 2,
+  "homeId": "01111111-1111-1111-1111-111111111111",
+  "assignedTo": "02222222-2222-2222-2222-222222222222",
+  "title": "Take out the trash",
+  "description": "Take out the trash from the kitchen.",
+  "severity": 4,
   "dueDate": "2026-06-01T12:00:00Z"
 }
 
