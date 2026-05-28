@@ -14,7 +14,6 @@ public class TicketService : ITicketService
 
     public async Task<Ticket> CreateTicketAsync(CreateTicketRequest request, string createdBy)
     {
-        // TODO: Add validation logic
         var now = DateTime.UtcNow;
         var ticket = new Ticket(
             Guid.CreateVersion7(),
