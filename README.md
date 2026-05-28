@@ -97,31 +97,51 @@ The API uses JWT bearer authentication (`AddJwtBearer()`), and all `/tickets` en
 
 > `dotnet user-jwts` stores the signing key in user-secrets (per-project, per-machine) and writes a dev issuer/audience into `appsettings.Development.json` the first time you run it. Nothing is committed to source control.
 
-#### 1. Mint a token
+#### 1. Test personas
 
-From the repo root:
+To exercise multi-tenant behavior (who can see which tickets) we seed a few fixed homes and members in [002_create_homes.sql](src/Casita.Infrastructure/SqlScripts/002_create_homes.sql) and mint a matching JWT per persona. The `--name` value below is used as the JWT's `sub` claim and lines up with `home_members.user_id`.
+
+| Persona | UserId (`sub`)                           | Home                                       | Role   |
+| ------- | ---------------------------------------- | ------------------------------------------ | ------ |
+| Alice   | `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`   | Casa Uno (`01111111-1111-1111-1111-111111111111`) | owner  |
+| Bob     | `bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb`   | Casa Uno                                   | member |
+| Carol   | `cccccccc-cccc-cccc-cccc-cccccccccccc`   | Casa Dos (`02222222-2222-2222-2222-222222222222`) | owner  |
+
+Alice and Bob share a home, so they should be able to see each other's tickets. Carol lives in a different home and should not see Casa Uno tickets.
+
+Mint a token per persona (run from the repo root):
 
 ```bash
 dotnet user-jwts create --project src/Casita.Api \
-  --name "00000000-0000-0000-0000-000000000abc" \
-  --role admin \
+  --name "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" \
+  --claim "name=Alice" \
+  --scope "tickets:read" --scope "tickets:write"
+
+dotnet user-jwts create --project src/Casita.Api \
+  --name "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" \
+  --claim "name=Bob" \
+  --scope "tickets:read" --scope "tickets:write"
+
+dotnet user-jwts create --project src/Casita.Api \
+  --name "cccccccc-cccc-cccc-cccc-cccccccccccc" \
+  --claim "name=Carol" \
   --scope "tickets:read" --scope "tickets:write"
 ```
 
-`--name` sets the `sub` (subject) claim — the user id the token represents. ASP.NET maps it to `ClaimTypes.NameIdentifier`, and the app reads it via `ICurrentUser.UserId`. Use any GUID/string that identifies a test user.
+Each command prints a JWT — copy them into the `@alice_token`, `@bob_token`, and `@carol_token` variables at the top of [Casita.Api.http](src/Casita.Api/Casita.Api.http).
 
-The command prints a JWT — copy it.
+> Homes and memberships are seeded by SQL for now. Adding/joining homes through the API will come later, at which point the persona table moves to real signup flows.
 
-#### 2. Use the token
+#### 2. Use a token
 
-In [Casita.Api.http](src/Casita.Api/Casita.Api.http), paste it into the `@token` variable and send the request, or use `curl`:
+In [Casita.Api.http](src/Casita.Api/Casita.Api.http), send a request using one of the persona tokens, or use `curl`:
 
 ```bash
 curl -X POST http://localhost:5220/tickets \
-  -H "Authorization: Bearer <paste-token-here>" \
+  -H "Authorization: Bearer <alice-token>" \
   -H "Content-Type: application/json" \
   -d '{
-    "homeId": "11111111-1111-1111-1111-111111111111",
+    "homeId": "01111111-1111-1111-1111-111111111111",
     "title": "Leaky faucet",
     "description": "Drip drip",
     "severity": 2

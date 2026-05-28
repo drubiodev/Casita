@@ -1,18 +1,58 @@
 @Api_HostAddress = http://localhost:5220
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMGFiYyIsInN1YiI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMGFiYyIsImp0aSI6ImFkYzFhOWFkIiwic2NvcGUiOlsidGlja2V0czpyZWFkIiwidGlja2V0czp3cml0ZSJdLCJyb2xlIjoiYWRtaW4iLCJob21lX2lkIjoiMTExMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExMTExIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTIyMCIsImh0dHBzOi8vbG9jYWxob3N0OjcyOTYiXSwibmJmIjoxNzc5OTM3MDU4LCJleHAiOjE3ODc4ODU4NTgsImlhdCI6MTc3OTkzNzA1OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.0w1sM3BJBbbQ_vUW84NgykHOPDbWFTqCtLJTZMlAt6I
 
-### Create Ticket
+# Mint these via `dotnet user-jwts create ...` (commands in README/below) and paste in.
+@alice_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImFhYWFhYWFhLWFhYWEtYWFhYS1hYWFhLWFhYWFhYWFhYWFhYSIsInN1YiI6ImFhYWFhYWFhLWFhYWEtYWFhYS1hYWFhLWFhYWFhYWFhYWFhYSIsImp0aSI6IjM1ZDYzNGYwIiwic2NvcGUiOlsidGlja2V0czpyZWFkIiwidGlja2V0czp3cml0ZSJdLCJuYW1lIjoiQWxpY2UiLCJhdWQiOlsiaHR0cDovL2xvY2FsaG9zdDo1MjIwIiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NzI5NiJdLCJuYmYiOjE3Nzk5NDAzNzUsImV4cCI6MTc4Nzg4OTE3NSwiaWF0IjoxNzc5OTQwMzc1LCJpc3MiOiJkb3RuZXQtdXNlci1qd3RzIn0.NNiTFBufmJ7WQ9CnlnAqHA1j7mtfDTXsMW94ElYAlmk
+@bob_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImJiYmJiYmJiLWJiYmItYmJiYi1iYmJiLWJiYmJiYmJiYmJiYiIsInN1YiI6ImJiYmJiYmJiLWJiYmItYmJiYi1iYmJiLWJiYmJiYmJiYmJiYiIsImp0aSI6IjkyMTcwM2NmIiwic2NvcGUiOlsidGlja2V0czpyZWFkIiwidGlja2V0czp3cml0ZSJdLCJuYW1lIjoiQm9iIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTIyMCIsImh0dHBzOi8vbG9jYWxob3N0OjcyOTYiXSwibmJmIjoxNzc5OTQwMzkxLCJleHAiOjE3ODc4ODkxOTEsImlhdCI6MTc3OTk0MDM5MSwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.NWjHDyYGayPK6pQidPHtB84sVuwW-u_sQs2UJKzkGs4
+@carol_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImNjY2NjY2NjLWNjY2MtY2NjYy1jY2NjLWNjY2NjY2NjY2NjYyIsInN1YiI6ImNjY2NjY2NjLWNjY2MtY2NjYy1jY2NjLWNjY2NjY2NjY2NjYyIsImp0aSI6IjU4NjgwOTA2Iiwic2NvcGUiOlsidGlja2V0czpyZWFkIiwidGlja2V0czp3cml0ZSJdLCJuYW1lIjoiQ2Fyb2wiLCJhdWQiOlsiaHR0cDovL2xvY2FsaG9zdDo1MjIwIiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NzI5NiJdLCJuYmYiOjE3Nzk5NDA0MDYsImV4cCI6MTc4Nzg4OTIwNiwiaWF0IjoxNzc5OTQwNDA2LCJpc3MiOiJkb3RuZXQtdXNlci1qd3RzIn0.LOTy7pJMBRvrWNiS6-RlBZbxEtpcNWhcn6rho7sFMUo
+
+### Alice (Casa Uno owner) creates a ticket
 POST {{Api_HostAddress}}/tickets
-Authorization: Bearer {{token}}
+Authorization: Bearer {{alice_token}}
 Content-Type: application/json
 
 {
   "homeId": "01111111-1111-1111-1111-111111111111",
-  "assignedTo": "02222222-2222-2222-2222-222222222222",
+  "assignedTo": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
   "title": "Take out the trash",
   "description": "Take out the trash from the kitchen.",
   "severity": 4,
   "dueDate": "2026-06-01T12:00:00Z"
+}
+
+### Bob (Casa Uno member) reads Alice's ticket — should succeed once RLS/authZ is wired
+GET {{Api_HostAddress}}/tickets/019e6cb7-6f46-7eac-a6ba-11ae5e8c7e2d
+Authorization: Bearer {{bob_token}}
+
+### Carol (Casa Dos) tries to read it — should 404/403
+GET {{Api_HostAddress}}/tickets/019e6cb7-6f46-7eac-a6ba-11ae5e8c7e2d
+Authorization: Bearer {{carol_token}}
+
+### Carol creates a ticket in her own home — should succeed
+POST {{Api_HostAddress}}/tickets
+Authorization: Bearer {{carol_token}}
+Content-Type: application/json
+
+{
+  "homeId": "02222222-2222-2222-2222-222222222222",
+  "assignedTo": null,
+  "title": "Water the plants",
+  "description": "Front yard only.",
+  "severity": 2,
+  "dueDate": null
+}
+
+### Carol tries to create a ticket in Casa Uno — should be rejected
+POST {{Api_HostAddress}}/tickets
+Authorization: Bearer {{carol_token}}
+Content-Type: application/json
+
+{
+  "homeId": "01111111-1111-1111-1111-111111111111",
+  "assignedTo": null,
+  "title": "Sneaky",
+  "description": "Should be rejected.",
+  "severity": 1,
+  "dueDate": null
 }
 
 ###

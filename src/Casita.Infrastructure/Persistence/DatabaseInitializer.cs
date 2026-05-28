@@ -1,5 +1,6 @@
 using System.Reflection;
 using Dapper;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -9,14 +10,14 @@ public class DatabaseInitializer : IHostedService
 {
     private const string ScriptsResourcePrefix = "Casita.Infrastructure.SqlScripts.";
 
-    private readonly IDbConnectionFactory _connectionFactory;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<DatabaseInitializer> _logger;
 
     public DatabaseInitializer(
-        IDbConnectionFactory connectionFactory,
+        IServiceScopeFactory scopeFactory,
         ILogger<DatabaseInitializer> logger)
     {
-        _connectionFactory = connectionFactory;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
@@ -35,7 +36,12 @@ public class DatabaseInitializer : IHostedService
             return;
         }
 
-        await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+        // Resolve the scoped connection factory inside its own scope.
+        // No current user is set here, so the factory uses the admin connection.
+        await using var scope = _scopeFactory.CreateAsyncScope();
+        var connectionFactory = scope.ServiceProvider.GetRequiredService<IDbConnectionFactory>();
+
+        await using var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
 
         foreach (var name in scriptNames)
         {
