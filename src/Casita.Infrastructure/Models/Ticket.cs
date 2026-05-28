@@ -1,13 +1,13 @@
-namespace Casita.Api.Models;
+namespace Casita.Infrastructure.Models;
 
 public record Ticket(
     Guid Id,
     Guid HomeId,
-    Guid AssignedTo,
+    Guid? AssignedTo,
     string Title,
     string Description,
-    int Severity,
-    DateTime DueDate,
+    Severity Severity,
+    DateTime? DueDate,
     DateTime CreatedAt,
     DateTime UpdatedAt
 );

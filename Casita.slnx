@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Casita.Api/Casita.Api.csproj" />
+    <Project Path="src/Casita.Infrastructure/Casita.Infrastructure.csproj" />
   </Folder>
 </Solution>

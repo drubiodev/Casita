@@ -1,20 +1,11 @@
-using Casita.Api.Models;
+using Casita.Api.Features.Tickets;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Registerservices(builder.Configuration);
+
 var app = builder.Build();
 
-// Create Ticket
-app.MapPost("/tickets", (Ticket ticket) =>
-{
-    ticket = ticket with
-    {
-        Id = Guid.NewGuid(),
-        CreatedAt = DateTime.UtcNow,
-        UpdatedAt = DateTime.UtcNow
-    };
-
-    return Results.Ok(ticket);
-});
-
+TicketEndpoints.MapTicketEndpoints(app);
 
 app.Run();
