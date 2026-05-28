@@ -9,5 +9,6 @@ public record Ticket(
     Severity Severity,
     DateTime? DueDate,
     DateTime CreatedAt,
-    DateTime UpdatedAt
+    DateTime UpdatedAt,
+    string CreatedBy
 );

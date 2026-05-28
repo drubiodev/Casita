@@ -83,6 +83,56 @@ docker compose up -d
    - **Database**: `casita`
    - **Username/Password**: `postgres` / `postgres`
 
+### Testing authenticated endpoints with `dotnet user-jwts`
+
+The API uses JWT bearer authentication (`AddJwtBearer()`), and all `/tickets` endpoints require an authenticated caller. For local development we mint dev tokens with the built-in `dotnet user-jwts` tool — no identity provider needed. This will be replaced by a real IdP later.
+
+> `dotnet user-jwts` stores the signing key in user-secrets (per-project, per-machine) and writes a dev issuer/audience into `appsettings.Development.json` the first time you run it. Nothing is committed to source control.
+
+#### 1. Mint a token
+
+From the repo root:
+
+```bash
+dotnet user-jwts create --project src/Casita.Api \
+  --name "00000000-0000-0000-0000-000000000abc" \
+  --role admin \
+  --scope "tickets:read" --scope "tickets:write" \
+  --claim "home_id=11111111-1111-1111-1111-111111111111"
+```
+
+`--name` sets the `sub` (subject) claim — the user id the token represents. ASP.NET maps it to `ClaimTypes.NameIdentifier`, readable via `User.FindFirstValue(ClaimTypes.NameIdentifier)`. Use any GUID/string that identifies a test user.
+
+The command prints a JWT — copy it.
+
+#### 2. Use the token
+
+In [Casita.Api.http](src/Casita.Api/Casita.Api.http), paste it into the `@token` variable and send the request, or use `curl`:
+
+```bash
+curl -X POST http://localhost:5220/tickets \
+  -H "Authorization: Bearer <paste-token-here>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "homeId": "11111111-1111-1111-1111-111111111111",
+    "title": "Leaky faucet",
+    "description": "Drip drip",
+    "severity": 2
+  }'
+```
+
+Without a valid bearer token you should get a `401 Unauthorized`.
+
+#### Useful `user-jwts` commands
+
+```bash
+dotnet user-jwts list --project src/Casita.Api               # all issued tokens
+dotnet user-jwts print <id> --project src/Casita.Api --show-all  # decode + claims
+dotnet user-jwts remove <id> --project src/Casita.Api        # revoke one
+dotnet user-jwts clear --project src/Casita.Api              # revoke all
+dotnet user-jwts key --project src/Casita.Api                # view/reset signing key
+```
+
 ## Build & test
 
 ```bash
